@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shadow | Frontend Developer</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div id="microcracks" aria-hidden="true"></div>
+  <div id="reactiveGlow" aria-hidden="true"></div>
+
+  <div id="cursor-dot" aria-hidden="true"></div>
+  <div id="cursor-ring" aria-hidden="true"></div>
+
+  <div id="portal" aria-hidden="true"></div>
+
+  <!-- INTRO -->
+  <div id="intro-screen" aria-hidden="false">
+    <div class="blobs" aria-hidden="true">
+      <div class="blob b1" data-parallax-m="0.12"></div>
+      <div class="blob b2" data-parallax-m="0.20"></div>
+      <div class="blob b3" data-parallax-m="0.30"></div>
+    </div>
+
+    <canvas id="webCanvas" aria-hidden="true"></canvas>
+    <canvas id="particles" aria-hidden="true"></canvas>
+
+    <div class="glass-box intro-card glass-border">
+      <div class="intro-kicker">
+        <span class="dot"></span>
+        Frontend / Web
+      </div>
+
+      <h1 class="intro-hi" aria-label="Привет, я Shadow">
+        <span class="hi-big">Hi!</span>
+        <span class="hi-sub">Я <span class="accent">Shadow</span></span>
+      </h1>
+
+      <p class="intro-lead">
+        Делаю интерфейсы: аккуратная верстка, JS-интерактив и анимации без лагов (60fps).
+      </p>
+
+      <div class="intro-actions">
+        <button class="btn primary magnetic" id="enterBtn" type="button">Войти</button>
+        <button class="btn ghost magnetic" id="projectsBtn" type="button">Проекты</button>
+      </div>
+
+      <div class="intro-hint">Enter / Space — войти • Double-click — быстро</div>
+    </div>
+  </div>
+
+  <audio id="crackSound" preload="auto" src="https://assets.mixkit.co/active_storage/sfx/212/212-preview.mp3"></audio>
+
+  <!-- MAIN -->
+  <div id="main-content" class="app" aria-hidden="true">
+    <div class="parallax-bg" aria-hidden="true">
+      <div class="layer layer-1" data-speed="0.14"></div>
+      <div class="layer layer-2" data-speed="0.30"></div>
+      <div class="layer layer-3" data-speed="0.52"></div>
+    </div>
+
+    <header class="topbar glass-border">
+      <a class="brand magnetic portal-link" href="#home">
+        <span class="brand-dot"></span>
+        Shadow
+      </a>
+
+      <nav class="nav" id="nav">
+        <a class="magnetic portal-link nav-link is-active" href="#projects" data-section="projects">Проекты</a>
+        <a class="magnetic portal-link nav-link" href="#skills" data-section="skills">Навыки</a>
+        <a class="magnetic portal-link nav-link" href="#about" data-section="about">Обо мне</a>
+        <a class="magnetic portal-link nav-link nav-cta" href="#contact" data-section="contact">Связаться</a>
+
+        <div class="nav-glow" aria-hidden="true"></div>
+        <div class="nav-indicator" aria-hidden="true"></div>
+      </nav>
+    </header>
+
+    <main id="home" class="container">
+      <!-- HERO -->
+      <section class="hero reveal" id="homeSection" data-section="home">
+        <div class="hero-left">
+          <div class="chip glass-border">
+            <span class="chip-dot"></span>
+            Available for work
+          </div>
+
+          <h1 class="glitch main-title" data-text="Shadow">Shadow</h1>
+          <p class="subtitle">Frontend Developer • HTML/CSS/JS • Motion UI • Python</p>
+
+          <div class="hero-actions">
+            <button class="btn primary magnetic portal-btn" data-target="projects" type="button">
+              Смотреть проекты
+            </button>
+            <button class="btn ghost magnetic portal-btn" data-target="contact" type="button">
+              Связаться
+            </button>
+          </div>
+
+          <div class="quick-info">
+            <div class="pill glass-border">Berlin (remote)</div>
+            <div class="pill glass-border">Junior+</div>
+            <div class="pill glass-border">Freelance</div>
+          </div>
+        </div>
+
+        <div class="hero-right">
+          <div class="avatar-wrap glass-border" data-parallax="0.22">
+            <img
+              class="avatar"
+              alt="Аватар Shadow"
+              src="data:image/svg+xml;utf8,<?xml version='1.0' encoding='UTF-8'?>\
+<svg xmlns='http://www.w3.org/2000/svg' width='512' height='512'>\
+<defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>\
+<stop offset='0' stop-color='%23a855f7'/>\
+<stop offset='1' stop-color='%2300ffff'/>\
+</linearGradient></defs>\
+<rect width='512' height='512' rx='96' fill='%230b0614'/>\
+<circle cx='256' cy='256' r='170' fill='url(%23g)' opacity='0.16'/>\
+<text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle'\
+ font-family='Arial, sans-serif' font-size='170' fill='%23ffffff'>S</text>\
+</svg>"
+            />
+            <div class="avatar-glow" aria-hidden="true"></div>
+          </div>
+
+          <div class="stat-grid">
+            <div class="stat-card tilt glass-border depth">
+              <div class="stat-number" data-counter="18">0</div>
+              <div class="stat-label">мини-проектов</div>
+            </div>
+            <div class="stat-card tilt glass-border depth">
+              <div class="stat-number">JS</div>
+              <div class="stat-label">интерактив</div>
+            </div>
+            <div class="stat-card tilt glass-border depth">
+              <div class="stat-number">UI</div>
+              <div class="stat-label">анимации</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- PROJECTS -->
+      <section id="projects" class="section reveal" data-section="projects">
+        <div class="section-head">
+          <h2>Проекты</h2>
+          <p class="muted">Hover — scrubbing + velocity blur • Клик — crack-open + 3D screenshot</p>
+        </div>
+
+        <div class="filters glass-border">
+          <button class="filter-btn is-active magnetic" data-filter="all" type="button">All</button>
+          <button class="filter-btn magnetic" data-filter="js" type="button">JS</button>
+          <button class="filter-btn magnetic" data-filter="ui" type="button">UI</button>
+          <button class="filter-btn magnetic" data-filter="api" type="button">API</button>
+          <button class="filter-btn magnetic" data-filter="python" type="button">Python</button>
+        </div>
+
+        <div id="projectsGrid" class="cards"></div>
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- SKILLS -->
+      <section id="skills" class="section reveal" data-section="skills">
+        <div class="section-head">
+          <h2>Навыки</h2>
+          <p class="muted">То, что ожидают от frontend junior+.</p>
+        </div>
+
+        <div class="skills">
+          <div class="skill glass-border tilt depth">
+            <div class="skill-title">Верстка</div>
+            <div class="skill-list">Семантика • Flex/Grid • Адаптив • Accessibility • Анимации</div>
+          </div>
+          <div class="skill glass-border tilt depth">
+            <div class="skill-title">JavaScript</div>
+            <div class="skill-list">DOM • Events • Fetch • Async/Await • Оптимизация</div>
+          </div>
+          <div class="skill glass-border tilt depth">
+            <div class="skill-title">Инструменты</div>
+            <div class="skill-list">Git/GitHub • DevTools • Figma • База SEO</div>
+          </div>
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- ABOUT -->
+      <section id="about" class="section reveal" data-section="about">
+        <div class="section-head">
+          <h2>Обо мне</h2>
+          <p class="muted">Чистый UI + “живые” эффекты без перегруза. Люблю 60fps.</p>
+        </div>
+
+        <div class="about-grid">
+          <div class="about-card glass-border tilt depth">
+            <h3>Сильные стороны</h3>
+            <ul>
+              <li>Аккуратная верстка и адаптив</li>
+              <li>Интерактив на чистом JS</li>
+              <li>Анимации (60fps) и микро-UX</li>
+              <li>Понимание структуры проекта</li>
+            </ul>
+          </div>
+          <div class="about-card glass-border tilt depth">
+            <h3>Цель</h3>
+            <ul>
+              <li>Frontend junior+ / стажировка</li>
+              <li>Реальные задачи и рост через ревью</li>
+              <li>Проекты с UI, а не только “кнопки”</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- CONTACT -->
+      <section id="contact" class="section contact reveal" data-section="contact">
+        <div class="section-head">
+          <h2>Контакты</h2>
+          <p class="muted">Пиши — отвечу.</p>
+        </div>
+
+        <div class="contact-card glass-border tilt depth">
+          <div class="contact-row">
+            <span class="contact-label">GitHub</span>
+            <a class="contact-value" href="https://github.com/ShadowAmp1" target="_blank" rel="noreferrer">ShadowAmp1</a>
+          </div>
+          <div class="contact-row">
+            <span class="contact-label">Email</span>
+            <a class="contact-value" href="mailto:amp98list@gmail.com">amp98list@gmail.com</a>
+          </div>
+        </div>
+
+        <footer class="footer">
+          <span>© <span id="year"></span> Shadow</span>
+          <span class="footer-dot">•</span>
+          <span class="muted">Built with HTML/CSS/JS</span>
+        </footer>
+      </section>
+    </main>
+  </div>
+
+  <!-- MODAL -->
+  <div id="modal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal-backdrop" data-close="true"></div>
+
+    <div class="modal-card glass-border depth" id="modalCard" role="document">
+      <!-- Crack overlay -->
+      <div class="crack-open" aria-hidden="true">
+        <svg class="crack-svg" id="crackSvg" preserveAspectRatio="none"></svg>
+
+        <div class="shards" aria-hidden="true" id="shards">
+          <i class="shard"></i><i class="shard"></i><i class="shard"></i><i class="shard"></i><i class="shard"></i>
+          <i class="shard"></i><i class="shard"></i><i class="shard"></i><i class="shard"></i><i class="shard"></i>
+          <i class="shard"></i><i class="shard"></i><i class="shard"></i><i class="shard"></i>
+        </div>
+      </div>
+
+      <button class="modal-close magnetic" type="button" aria-label="Закрыть" data-close="true">✕</button>
+
+      <div class="modal-media" id="modalMedia">
+        <div class="shot-3d" id="shot3d">
+          <img id="modalShot" alt="Скриншот проекта" />
+          <div class="shot-shine" aria-hidden="true"></div>
+          <div class="shot-speckle" aria-hidden="true"></div>
+        </div>
+
+        <video id="modalVideo" playsinline muted loop preload="metadata"></video>
+        <div class="modal-media-glow" aria-hidden="true"></div>
+      </div>
+
+      <div class="modal-body">
+        <div class="modal-top">
+          <h3 id="modalTitle"></h3>
+          <div id="modalTags" class="modal-tags"></div>
+        </div>
+
+        <p id="modalDesc" class="modal-desc"></p>
+
+        <div class="modal-actions">
+          <a id="modalDemo" class="btn primary magnetic" href="#" target="_blank" rel="noreferrer">Demo</a>
+          <a id="modalCode" class="btn ghost magnetic" href="#" target="_blank" rel="noreferrer">Code</a>
+        </div>
+
+        <div id="modalMeta" class="modal-meta"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
