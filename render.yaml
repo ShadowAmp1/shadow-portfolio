@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: shadow-portfolio
+    runtime: static
+    buildCommand: "true"
+    staticPublishPath: "."
+    autoDeployTrigger: commit
+    envVars:
+      - key: SKIP_INSTALL_DEPS
+        value: "true"
