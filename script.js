@@ -171,6 +171,11 @@
 
     function setTargetFromTasks() {
       // 0..92 from tasks, last 8% is "polish"
+      const allDone = Object.values(tasks).every(Boolean);
+      if (allDone) {
+        target = 100; // allow real completion (prevents "stuck at 92%")
+        return;
+      }
       target = 12 + taskProgress() * 80;
       target = clamp(target, 0, 92);
     }
@@ -260,8 +265,7 @@
         set(next + drift);
 
         const allDone = Object.values(tasks).every(Boolean);
-        if (allDone && progress >= 92) {
-          // smooth finish
+        if (allDone && progress >= 99.2) {
           set(100);
           finish();
           return;
@@ -459,9 +463,10 @@
             col = mix(col, vec3(0.65,0.25,0.95), 0.18*lens);
             col = mix(col, vec3(0.0,0.95,0.95), 0.10*(1.0-lens));
 
-            float a = (0.08 + 0.22*fbm(uv*4.0)) * u_int;
-            a *= 0.55 + lens*0.55;
-            a *= 0.78 + v*0.30;
+            // alpha controls "veil/fog" — keep it crisp for neon
+            float a = (0.04 + 0.14*fbm(uv*4.0)) * u_int;
+            a *= 0.40 + lens*0.42;
+            a *= 0.74 + v*0.22;
 
             gl_FragColor = vec4(col, a);
           }
