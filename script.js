@@ -464,8 +464,8 @@
             col = mix(col, vec3(0.0,0.95,0.95), 0.10*(1.0-lens));
 
             // alpha controls "veil/fog" — keep it crisp for neon
-            float a = (0.04 + 0.14*fbm(uv*4.0)) * u_int;
-            a *= 0.40 + lens*0.42;
+            float a = (0.02 + 0.08*fbm(uv*4.0)) * u_int;
+            a *= 0.28 + lens*0.30;
             a *= 0.74 + v*0.22;
 
             gl_FragColor = vec4(col, a);
