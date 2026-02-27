@@ -2,18 +2,76 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Shadow | Frontend Developer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#07040d" />
+
+  <title>Shadow — Frontend Developer (Glass UI / Motion)</title>
+  <meta name="description" content="Портфолио Shadow: frontend junior+ — HTML/CSS/JS, UI motion, glass-эффекты, portal-переходы, Voronoi crack модалки." />
+  <meta name="keywords" content="frontend, junior+, portfolio, html, css, javascript, ui, motion, glassmorphism, webgl" />
+  <meta name="author" content="Shadow" />
+  <meta name="robots" content="index,follow" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Shadow — Frontend Developer" />
+  <meta property="og:description" content="UI Motion • Glass/Portal • Voronoi crack • 60fps микро-UX" />
+  <meta property="og:image" content="og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:locale" content="ru_RU" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Shadow — Frontend Developer" />
+  <meta name="twitter:description" content="UI Motion • Glass/Portal • Voronoi crack • 60fps микро-UX" />
+  <meta name="twitter:image" content="og-image.png" />
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23a855f7'/%3E%3Cstop offset='1' stop-color='%2300ffff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='%2307040d'/%3E%3Ccircle cx='32' cy='32' r='18' fill='url(%23g)' opacity='.35'/%3E%3Ctext x='32' y='40' text-anchor='middle' font-size='28' font-family='Arial' fill='%23fff'%3ES%3C/text%3E%3C/svg%3E" />
+
   <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
-  <div id="microcracks" aria-hidden="true"></div>
-  <div id="reactiveGlow" aria-hidden="true"></div>
+  <a class="skip-link" href="#home">Перейти к контенту</a>
 
+  <!-- Preloader -->
+  <div id="preloader" class="preloader" role="status" aria-live="polite" aria-label="Загрузка сайта">
+    <div class="preloader-card glass-border">
+      <div class="preloader-top">
+        <span class="pre-dot" aria-hidden="true"></span>
+        <span class="pre-title">Loading</span>
+      </div>
+
+      <div class="pre-percent">
+        <span id="prePercent">0%</span>
+      </div>
+
+      <div class="pre-bar" aria-hidden="true">
+        <div id="preBarFill" class="pre-bar-fill"></div>
+      </div>
+
+      <div id="preHint" class="pre-hint">Подготавливаю эффекты…</div>
+    </div>
+    <noscript>
+      <div class="noscript">
+        Для работы анимаций нужен JavaScript. Но контент всё равно доступен — просто включи JS 🙂
+      </div>
+    </noscript>
+  </div>
+
+  <!-- GPU glass distortion (WebGL) -->
+  <canvas id="glGlass" class="gl-glass" aria-hidden="true"></canvas>
+
+  <!-- Ambient layers -->
+  <div id="reactiveGlow" aria-hidden="true"></div>
+  <div id="microcracks" aria-hidden="true"></div>
+
+  <!-- Custom cursor (disabled on mobile/reduced) -->
   <div id="cursor-dot" aria-hidden="true"></div>
   <div id="cursor-ring" aria-hidden="true"></div>
 
+  <!-- Portal overlay -->
   <div id="portal" aria-hidden="true"></div>
 
   <!-- INTRO -->
@@ -24,12 +82,9 @@
       <div class="blob b3" data-parallax-m="0.30"></div>
     </div>
 
-    <canvas id="webCanvas" aria-hidden="true"></canvas>
-    <canvas id="particles" aria-hidden="true"></canvas>
-
-    <div class="glass-box intro-card glass-border">
+    <div class="glass-box intro-card glass-border" role="region" aria-label="Интро">
       <div class="intro-kicker">
-        <span class="dot"></span>
+        <span class="dot" aria-hidden="true"></span>
         Frontend / Web
       </div>
 
@@ -42,32 +97,33 @@
         Делаю интерфейсы: аккуратная верстка, JS-интерактив и анимации без лагов (60fps).
       </p>
 
-      <div class="intro-actions">
+      <div class="intro-actions" role="group" aria-label="Действия">
         <button class="btn primary magnetic" id="enterBtn" type="button">Войти</button>
         <button class="btn ghost magnetic" id="projectsBtn" type="button">Проекты</button>
       </div>
 
-      <div class="intro-hint">Enter / Space — войти • Double-click — быстро</div>
+      <div class="intro-hint">Enter / Space — войти • Esc — закрывать модалки</div>
     </div>
   </div>
 
-  <audio id="crackSound" preload="auto" src="https://assets.mixkit.co/active_storage/sfx/212/212-preview.mp3"></audio>
+  <!-- Sound (lazy) -->
+  <audio id="crackSound" preload="none" src="https://assets.mixkit.co/active_storage/sfx/212/212-preview.mp3"></audio>
 
   <!-- MAIN -->
-  <div id="main-content" class="app" aria-hidden="true">
+  <div id="main-content" class="app" aria-hidden="true" inert>
     <div class="parallax-bg" aria-hidden="true">
       <div class="layer layer-1" data-speed="0.14"></div>
       <div class="layer layer-2" data-speed="0.30"></div>
       <div class="layer layer-3" data-speed="0.52"></div>
     </div>
 
-    <header class="topbar glass-border">
-      <a class="brand magnetic portal-link" href="#home">
-        <span class="brand-dot"></span>
+    <header class="topbar glass-border" role="banner">
+      <a class="brand magnetic portal-link" href="#home" aria-label="На главную">
+        <span class="brand-dot" aria-hidden="true"></span>
         Shadow
       </a>
 
-      <nav class="nav" id="nav">
+      <nav class="nav" id="nav" aria-label="Навигация">
         <a class="magnetic portal-link nav-link is-active" href="#projects" data-section="projects">Проекты</a>
         <a class="magnetic portal-link nav-link" href="#skills" data-section="skills">Навыки</a>
         <a class="magnetic portal-link nav-link" href="#about" data-section="about">Обо мне</a>
@@ -78,19 +134,19 @@
       </nav>
     </header>
 
-    <main id="home" class="container">
+    <main id="home" class="container" tabindex="-1">
       <!-- HERO -->
-      <section class="hero reveal" id="homeSection" data-section="home">
+      <section class="hero reveal" id="homeSection" data-section="home" aria-label="Главный блок">
         <div class="hero-left">
-          <div class="chip glass-border">
-            <span class="chip-dot"></span>
+          <div class="chip glass-border" aria-label="Статус">
+            <span class="chip-dot" aria-hidden="true"></span>
             Available for work
           </div>
 
-          <h1 class="glitch main-title" data-text="Shadow">Shadow</h1>
+          <h2 class="glitch main-title" data-text="Shadow">Shadow</h2>
           <p class="subtitle">Frontend Developer • HTML/CSS/JS • Motion UI • Python</p>
 
-          <div class="hero-actions">
+          <div class="hero-actions" role="group" aria-label="Навигация по странице">
             <button class="btn primary magnetic portal-btn" data-target="projects" type="button">
               Смотреть проекты
             </button>
@@ -99,7 +155,7 @@
             </button>
           </div>
 
-          <div class="quick-info">
+          <div class="quick-info" aria-label="Кратко">
             <div class="pill glass-border">Berlin (remote)</div>
             <div class="pill glass-border">Junior+</div>
             <div class="pill glass-border">Freelance</div>
@@ -107,16 +163,20 @@
         </div>
 
         <div class="hero-right">
-          <div class="avatar-wrap glass-border" data-parallax="0.22">
+          <div class="avatar-wrap glass-border tilt depth" data-parallax="0.22" aria-label="Аватар">
             <img
               class="avatar"
               alt="Аватар Shadow"
+              width="512"
+              height="512"
+              loading="lazy"
+              decoding="async"
               src="data:image/svg+xml;utf8,<?xml version='1.0' encoding='UTF-8'?><svg xmlns='http://www.w3.org/2000/svg' width='512' height='512'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%23a855f7'/><stop offset='1' stop-color='%2300ffff'/></linearGradient></defs><rect width='512' height='512' rx='96' fill='%230b0614'/><circle cx='256' cy='256' r='170' fill='url(%23g)' opacity='0.16'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='170' fill='%23ffffff'>S</text></svg>"
             />
             <div class="avatar-glow" aria-hidden="true"></div>
           </div>
 
-          <div class="stat-grid">
+          <div class="stat-grid" aria-label="Статы">
             <div class="stat-card tilt glass-border depth">
               <div class="stat-number" data-counter="18">0</div>
               <div class="stat-label">мини-проектов</div>
@@ -133,30 +193,30 @@
         </div>
       </section>
 
-      <div class="divider"></div>
+      <div class="divider" aria-hidden="true"></div>
 
       <!-- PROJECTS -->
-      <section id="projects" class="section reveal" data-section="projects">
+      <section id="projects" class="section reveal" data-section="projects" aria-label="Проекты">
         <div class="section-head">
           <h2>Проекты</h2>
-          <p class="muted">Hover — scrubbing + velocity blur • Клик — crack-open + 3D screenshot</p>
+          <p class="muted">Hover — scrubbing + velocity blur • Клик — glass impact + 3D screenshot</p>
         </div>
 
-        <div class="filters glass-border">
-          <button class="filter-btn is-active magnetic" data-filter="all" type="button">All</button>
-          <button class="filter-btn magnetic" data-filter="js" type="button">JS</button>
-          <button class="filter-btn magnetic" data-filter="ui" type="button">UI</button>
-          <button class="filter-btn magnetic" data-filter="api" type="button">API</button>
-          <button class="filter-btn magnetic" data-filter="python" type="button">Python</button>
+        <div class="filters glass-border" role="tablist" aria-label="Фильтр проектов">
+          <button class="filter-btn is-active magnetic" data-filter="all" type="button" role="tab" aria-selected="true">All</button>
+          <button class="filter-btn magnetic" data-filter="js" type="button" role="tab" aria-selected="false">JS</button>
+          <button class="filter-btn magnetic" data-filter="ui" type="button" role="tab" aria-selected="false">UI</button>
+          <button class="filter-btn magnetic" data-filter="api" type="button" role="tab" aria-selected="false">API</button>
+          <button class="filter-btn magnetic" data-filter="python" type="button" role="tab" aria-selected="false">Python</button>
         </div>
 
-        <div id="projectsGrid" class="cards"></div>
+        <div id="projectsGrid" class="cards" aria-live="polite"></div>
       </section>
 
-      <div class="divider"></div>
+      <div class="divider" aria-hidden="true"></div>
 
       <!-- SKILLS -->
-      <section id="skills" class="section reveal" data-section="skills">
+      <section id="skills" class="section reveal" data-section="skills" aria-label="Навыки">
         <div class="section-head">
           <h2>Навыки</h2>
           <p class="muted">То, что ожидают от frontend junior+.</p>
@@ -178,10 +238,10 @@
         </div>
       </section>
 
-      <div class="divider"></div>
+      <div class="divider" aria-hidden="true"></div>
 
       <!-- ABOUT -->
-      <section id="about" class="section reveal" data-section="about">
+      <section id="about" class="section reveal" data-section="about" aria-label="Обо мне">
         <div class="section-head">
           <h2>Обо мне</h2>
           <p class="muted">Чистый UI + “живые” эффекты без перегруза. Люблю 60fps.</p>
@@ -208,19 +268,19 @@
         </div>
       </section>
 
-      <div class="divider"></div>
+      <div class="divider" aria-hidden="true"></div>
 
       <!-- CONTACT -->
-      <section id="contact" class="section contact reveal" data-section="contact">
+      <section id="contact" class="section contact reveal" data-section="contact" aria-label="Контакты">
         <div class="section-head">
           <h2>Контакты</h2>
           <p class="muted">Пиши — отвечу.</p>
         </div>
 
-        <div class="contact-card glass-border tilt depth">
+        <div class="contact-card glass-border tilt depth" role="region" aria-label="Контактные ссылки">
           <div class="contact-row">
             <span class="contact-label">GitHub</span>
-            <a class="contact-value" href="https://github.com/ShadowAmp1" target="_blank" rel="noreferrer">ShadowAmp1</a>
+            <a class="contact-value" href="https://github.com/ShadowAmp1" target="_blank" rel="noreferrer noopener">ShadowAmp1</a>
           </div>
           <div class="contact-row">
             <span class="contact-label">Email</span>
@@ -230,7 +290,7 @@
 
         <footer class="footer">
           <span>© <span id="year"></span> Shadow</span>
-          <span class="footer-dot">•</span>
+          <span class="footer-dot" aria-hidden="true">•</span>
           <span class="muted">Built with HTML/CSS/JS</span>
         </footer>
       </section>
@@ -238,11 +298,11 @@
   </div>
 
   <!-- MODAL -->
-  <div id="modal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
+  <div id="modal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalDesc">
     <div class="modal-backdrop" data-close="true"></div>
 
-    <div class="modal-card glass-border depth" id="modalCard" role="document">
-      <!-- Crack overlay -->
+    <div class="modal-card glass-border depth" id="modalCard" role="document" tabindex="-1">
+      <!-- Impact overlay -->
       <div class="crack-open" aria-hidden="true">
         <svg class="crack-svg" id="crackSvg" preserveAspectRatio="none"></svg>
 
@@ -257,26 +317,26 @@
 
       <div class="modal-media" id="modalMedia">
         <div class="shot-3d" id="shot3d">
-          <img id="modalShot" alt="Скриншот проекта" />
+          <img id="modalShot" alt="Скриншот проекта" loading="lazy" decoding="async" />
           <div class="shot-shine" aria-hidden="true"></div>
           <div class="shot-speckle" aria-hidden="true"></div>
         </div>
 
-        <video id="modalVideo" playsinline muted loop preload="metadata"></video>
+        <video id="modalVideo" playsinline muted loop preload="none"></video>
         <div class="modal-media-glow" aria-hidden="true"></div>
       </div>
 
       <div class="modal-body">
         <div class="modal-top">
           <h3 id="modalTitle"></h3>
-          <div id="modalTags" class="modal-tags"></div>
+          <div id="modalTags" class="modal-tags" aria-label="Теги проекта"></div>
         </div>
 
         <p id="modalDesc" class="modal-desc"></p>
 
-        <div class="modal-actions">
-          <a id="modalDemo" class="btn primary magnetic" href="#" target="_blank" rel="noreferrer">Demo</a>
-          <a id="modalCode" class="btn ghost magnetic" href="#" target="_blank" rel="noreferrer">Code</a>
+        <div class="modal-actions" role="group" aria-label="Ссылки проекта">
+          <a id="modalDemo" class="btn primary magnetic" href="#" target="_blank" rel="noreferrer noopener">Demo</a>
+          <a id="modalCode" class="btn ghost magnetic" href="#" target="_blank" rel="noreferrer noopener">Code</a>
         </div>
 
         <div id="modalMeta" class="modal-meta"></div>
@@ -284,6 +344,6 @@
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <script src="script.js" defer></script>
 </body>
 </html>
