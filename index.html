@@ -1,368 +1,311 @@
 <!DOCTYPE html>
+
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="color-scheme" content="dark" />
-  <meta name="theme-color" content="#07040d" />
-
-  <title>Shadow — Frontend Developer (Glass UI / Motion)</title>
-  <meta name="description" content="Портфолио Shadow: frontend junior+ — HTML/CSS/JS, UI motion, glass-эффекты, portal-переходы, Voronoi crack модалки." />
-  <meta name="keywords" content="frontend, junior+, portfolio, html, css, javascript, ui, motion, glassmorphism, webgl" />
-  <meta name="author" content="Shadow" />
-  <meta name="robots" content="index,follow" />
-
-  <!-- Open Graph -->
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="Shadow — Frontend Developer" />
-  <meta property="og:description" content="UI Motion • Glass/Portal • Voronoi crack • 60fps микро-UX" />
-  <meta property="og:image" content="og-image.png" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta property="og:locale" content="ru_RU" />
-
-  <!-- Twitter -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Shadow — Frontend Developer" />
-  <meta name="twitter:description" content="UI Motion • Glass/Portal • Voronoi crack • 60fps микро-UX" />
-  <meta name="twitter:image" content="og-image.png" />
-
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23a855f7'/%3E%3Cstop offset='1' stop-color='%2300ffff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='%2307040d'/%3E%3Ccircle cx='32' cy='32' r='18' fill='url(%23g)' opacity='.35'/%3E%3Ctext x='32' y='40' text-anchor='middle' font-size='28' font-family='Arial' fill='%23fff'%3ES%3C/text%3E%3C/svg%3E" />
-
-  <link rel="stylesheet" href="style.css" />
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<meta content="dark" name="color-scheme"/>
+<meta content="#07040d" name="theme-color"/>
+<title>Shadow — Frontend Developer (UI Engineering • Performance • Motion)</title>
+<meta content="Портфолио Shadow: frontend junior+ — быстрые интерфейсы, аккуратная верстка, интерактив на JS, доступность (a11y) и производительные анимации." name="description"/>
+<meta content="frontend, junior+, portfolio, html, css, javascript, ui engineering, performance, a11y, motion, webgl" name="keywords"/>
+<meta content="Shadow" name="author"/>
+<meta content="index,follow" name="robots"/>
+<!-- Open Graph -->
+<meta content="website" property="og:type"/>
+<meta content="Shadow — Frontend Developer (UI Engineering)" property="og:title"/>
+<meta content="Быстрые интерфейсы • Чистая верстка • JS-интерактив • Motion без лагов" property="og:description"/>
+<meta content="og-image.png" property="og:image"/>
+<meta content="1200" property="og:image:width"/>
+<meta content="630" property="og:image:height"/>
+<meta content="ru_RU" property="og:locale"/>
+<!-- Twitter -->
+<meta content="summary_large_image" name="twitter:card"/>
+<meta content="Shadow — Frontend Developer" name="twitter:title"/>
+<meta content="Быстрые интерфейсы • Чистая верстка • JS-интерактив • Motion без лагов" name="twitter:description"/>
+<meta content="og-image.png" name="twitter:image"/>
+<link href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23a855f7'/%3E%3Cstop offset='1' stop-color='%2300ffff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='%2307040d'/%3E%3Ccircle cx='32' cy='32' r='18' fill='url(%23g)' opacity='.35'/%3E%3Ctext x='32' y='40' text-anchor='middle' font-size='28' font-family='Arial' fill='%23fff'%3ES%3C/text%3E%3C/svg%3E" rel="icon"/>
+<link href="style.css" rel="stylesheet"/>
 </head>
-
 <body>
-  <a class="skip-link" href="#home">Перейти к контенту</a>
-
-  <!-- Preloader -->
-  <div id="preloader" class="preloader" role="status" aria-live="polite" aria-label="Загрузка сайта">
-    <div class="preloader-card glass-border">
-      <div class="preloader-top">
-        <span class="pre-dot" aria-hidden="true"></span>
-        <span class="pre-title">Loading</span>
-      </div>
-
-      <div class="pre-percent">
-        <span id="prePercent">0%</span>
-      </div>
-
-      <div class="pre-bar" aria-hidden="true">
-        <div id="preBarFill" class="pre-bar-fill"></div>
-      </div>
-
-      <div id="preHint" class="pre-hint">Подготавливаю эффекты…</div>
-    </div>
-    <noscript>
-      <div class="noscript">
+<a class="skip-link" href="#home">Перейти к контенту</a>
+<!-- Preloader -->
+<div aria-label="Загрузка сайта" aria-live="polite" class="preloader" id="preloader" role="status">
+<div class="preloader-card glass-border">
+<div class="preloader-top">
+<span aria-hidden="true" class="pre-dot"></span>
+<span class="pre-title">Loading</span>
+</div>
+<div class="pre-percent">
+<span id="prePercent">0%</span>
+</div>
+<div aria-hidden="true" class="pre-bar">
+<div class="pre-bar-fill" id="preBarFill"></div>
+</div>
+<div class="pre-hint" id="preHint">Подготавливаю эффекты…</div>
+</div>
+<noscript>
+<div class="noscript">
         Для работы анимаций нужен JavaScript. Но контент всё равно доступен — просто включи JS 🙂
       </div>
-    </noscript>
-  </div>
-
-  <!-- GPU glass distortion (WebGL) -->
-  <canvas id="glGlass" class="gl-glass" aria-hidden="true"></canvas>
-
-  <!-- Ambient layers -->
-  <div id="reactiveGlow" aria-hidden="true"></div>
-  <div id="microcracks" aria-hidden="true"></div>
-
-  <!-- Custom cursor (disabled on mobile/reduced) -->
-  <div id="cursor-dot" aria-hidden="true"></div>
-  <div id="cursor-ring" aria-hidden="true"></div>
-
-  <!-- Portal overlay -->
-  <div id="portal" aria-hidden="true"></div>
-
-  <!-- INTRO -->
-  <div id="intro-screen" aria-hidden="false">
-    <div class="blobs" aria-hidden="true">
-      <div class="blob b1" data-parallax-m="0.12"></div>
-      <div class="blob b2" data-parallax-m="0.20"></div>
-      <div class="blob b3" data-parallax-m="0.30"></div>
-    </div>
-
-    <div class="glass-box intro-card glass-border" role="region" aria-label="Интро">
-      <div class="intro-kicker">
-        <span class="dot" aria-hidden="true"></span>
+</noscript>
+</div>
+<!-- GPU glass distortion (WebGL) -->
+<canvas aria-hidden="true" class="gl-glass" id="glGlass"></canvas>
+<!-- Ambient layers -->
+<div aria-hidden="true" id="reactiveGlow"></div>
+<div aria-hidden="true" id="microcracks"></div>
+<!-- Custom cursor (disabled on mobile/reduced) -->
+<div aria-hidden="true" id="cursor-dot"></div>
+<div aria-hidden="true" id="cursor-ring"></div>
+<!-- Portal overlay -->
+<div aria-hidden="true" id="portal"></div>
+<!-- INTRO -->
+<div aria-hidden="false" id="intro-screen">
+<div aria-hidden="true" class="blobs">
+<div class="blob b1" data-parallax-m="0.12"></div>
+<div class="blob b2" data-parallax-m="0.20"></div>
+<div class="blob b3" data-parallax-m="0.30"></div>
+</div>
+<div aria-label="Интро" class="glass-box intro-card glass-border" role="region">
+<div class="intro-kicker">
+<span aria-hidden="true" class="dot"></span>
         Frontend / Web
       </div>
-
-      <h1 class="intro-hi" aria-label="Привет, я Shadow">
-        <span class="hi-big">Hi!</span>
-        <span class="hi-sub">Я <span class="accent">Shadow</span></span>
-      </h1>
-
-      <p class="intro-lead">
-        Делаю интерфейсы: аккуратная верстка, JS-интерактив и анимации без лагов (60fps).
-      </p>
-
-      <div class="intro-actions" role="group" aria-label="Действия">
-        <button class="btn primary magnetic" id="enterBtn" type="button">Войти</button>
-        <button class="btn ghost magnetic" id="projectsBtn" type="button">Проекты</button>
-      </div>
-
-      <div class="intro-hint">Enter / Space — войти • Esc — закрывать модалки</div>
-    </div>
-  </div>
-
-  <!-- Sound (lazy) -->
-  <audio id="crackSound" preload="none" src="https://assets.mixkit.co/active_storage/sfx/212/212-preview.mp3"></audio>
-
-  <!-- MAIN -->
-  <div id="main-content" class="app" aria-hidden="true" inert>
-    <div class="parallax-bg" aria-hidden="true">
-      <div class="layer layer-1" data-speed="0.14"></div>
-      <div class="layer layer-2" data-speed="0.30"></div>
-      <div class="layer layer-3" data-speed="0.52"></div>
-    </div>
-
-    <header class="topbar glass-border" role="banner">
-      <a class="brand magnetic portal-link" href="#home" aria-label="На главную">
-        <span class="brand-dot" aria-hidden="true"></span>
+<h1 aria-label="Привет, я Shadow" class="intro-hi">
+<span class="hi-big">Hi!</span>
+<span class="hi-sub">Я <span class="accent">Shadow</span></span>
+</h1>
+<p class="intro-lead">Делаю быстрые интерфейсы: чистая верстка, продуманный JS-интерактив и анимации без просадок по FPS.</p>
+<div aria-label="Действия" class="intro-actions" role="group">
+<button class="btn primary magnetic" id="enterBtn" type="button">Войти</button>
+<button class="btn ghost magnetic" id="projectsBtn" type="button">Проекты</button>
+</div>
+<div class="intro-hint">Автовход через секунду • Enter / Space — войти • Esc — закрывать модалки</div>
+</div>
+</div>
+<!-- Sound (lazy) -->
+<audio id="crackSound" preload="none" src="https://assets.mixkit.co/active_storage/sfx/212/212-preview.mp3"></audio>
+<!-- MAIN -->
+<div aria-hidden="true" class="app" id="main-content" inert="">
+<div aria-hidden="true" class="parallax-bg">
+<div class="layer layer-1" data-speed="0.14"></div>
+<div class="layer layer-2" data-speed="0.30"></div>
+<div class="layer layer-3" data-speed="0.52"></div>
+</div>
+<header class="topbar glass-border" role="banner">
+<a aria-label="На главную" class="brand magnetic portal-link" href="#home">
+<span aria-hidden="true" class="brand-dot"></span>
         Shadow
       </a>
+<nav aria-label="Навигация" class="nav" id="nav">
+<a class="magnetic portal-link nav-link is-active" data-section="projects" href="#projects">Проекты</a>
+<a class="magnetic portal-link nav-link" data-section="skills" href="#skills">Навыки</a>
+<a class="magnetic portal-link nav-link" data-section="about" href="#about">Обо мне</a>
+<a class="magnetic portal-link nav-link nav-cta" data-section="contact" href="#contact">Связаться</a>
+<div aria-hidden="true" class="nav-glow"></div>
+<div aria-hidden="true" class="nav-indicator"></div>
+</nav>
+</header>
+<div class="scroll-progress" aria-hidden="true"><div class="scroll-progress-bar" id="scrollProgressBar"></div></div>
 
-      <nav class="nav" id="nav" aria-label="Навигация">
-        <a class="magnetic portal-link nav-link is-active" href="#projects" data-section="projects">Проекты</a>
-        <a class="magnetic portal-link nav-link" href="#skills" data-section="skills">Навыки</a>
-        <a class="magnetic portal-link nav-link" href="#about" data-section="about">Обо мне</a>
-        <a class="magnetic portal-link nav-link nav-cta" href="#contact" data-section="contact">Связаться</a>
-
-        <div class="nav-glow" aria-hidden="true"></div>
-        <div class="nav-indicator" aria-hidden="true"></div>
-      </nav>
-    </header>
-
-    <main id="home" class="container" tabindex="-1">
-      <!-- HERO -->
-      <section class="hero reveal" id="homeSection" data-section="home" aria-label="Главный блок">
-        <div class="bg-blob" aria-hidden="true"></div>
-        <div class="bg-blob bg-blob--2" aria-hidden="true"></div>
-        <div class="hero-left">
-          <div class="chip glass-border" aria-label="Статус">
-            <span class="chip-dot" aria-hidden="true"></span>
+<main class="container" id="home" tabindex="-1">
+<!-- HERO -->
+<section aria-label="Главный блок" class="hero reveal" data-section="home" id="homeSection">
+<div aria-hidden="true" class="bg-blob"></div>
+<div aria-hidden="true" class="bg-blob bg-blob--2"></div>
+<div class="hero-left">
+<div aria-label="Статус" class="chip glass-border">
+<span aria-hidden="true" class="chip-dot"></span>
             Available for work
           </div>
-
-          <h2 class="glitch main-title" data-text="Shadow">Shadow</h2>
-          <p class="subtitle">Frontend Developer • HTML/CSS/JS • Motion UI • Python</p>
-
-          <aside class="bio-card glass-border depth reveal" aria-label="Коротко обо мне">
-            <div class="bio-top">
-              <span class="bio-dot" aria-hidden="true"></span>
-              <span class="bio-kicker">Bio</span>
-            </div>
-            <p class="bio-text">
+<h2 class="glitch main-title" data-text="Shadow">Shadow</h2>
+<p class="subtitle">Frontend Developer • HTML/CSS/JS • Motion UI • Python</p>
+<aside aria-label="Коротко обо мне" class="bio-card glass-border depth reveal">
+<div class="bio-top">
+<span aria-hidden="true" class="bio-dot"></span>
+<span class="bio-kicker">Bio</span>
+</div>
+<p class="bio-text">
               Делаю чистую вёрстку, интерактив на JS и motion‑UI без лагов (60fps).
               Люблю эффект “glass / neon”, но держу UX и производительность в приоритете.
             </p>
-            <ul class="bio-list" aria-label="Сильные стороны">
-              <li>Адаптивная верстка + компоненты</li>
-              <li>Анимации, scroll‑UX, micro‑interactions</li>
-              <li>Оптимизация: rAF, lazy, Lighthouse</li>
-            </ul>
-          </aside>
-
-
-          <div class="hero-actions" role="group" aria-label="Навигация по странице">
-            <button class="btn primary magnetic portal-btn" data-target="projects" type="button">
+<ul aria-label="Сильные стороны" class="bio-list">
+<li>Адаптивная верстка + компоненты</li>
+<li>Анимации, scroll‑UX, micro‑interactions</li>
+<li>Оптимизация: rAF, lazy, Lighthouse</li>
+</ul>
+</aside>
+<div aria-label="Навигация по странице" class="hero-actions" role="group">
+<button class="btn primary magnetic portal-btn" data-target="projects" type="button">
               Смотреть проекты
             </button>
-            <button class="btn ghost magnetic portal-btn" data-target="contact" type="button">
+<button class="btn ghost magnetic portal-btn" data-target="contact" type="button">
               Связаться
             </button>
-          </div>
+</div>
+<div aria-label="Кратко" class="quick-info">
+<div class="pill glass-border">Berlin (remote)</div>
+<div class="pill glass-border">Junior+</div>
+<div class="pill glass-border">Freelance</div>
+</div>
+</div>
+<div class="hero-right">
+<div aria-label="Аватар" class="avatar-wrap glass-border tilt depth" data-parallax="0.22">
+<img alt="Аватар Shadow" class="avatar" decoding="async" height="512" loading="lazy" src="data:image/svg+xml;utf8,&lt;?xml version='1.0' encoding='UTF-8'?&gt;&lt;svg xmlns='http://www.w3.org/2000/svg' width='512' height='512'&gt;&lt;defs&gt;&lt;linearGradient id='g' x1='0' y1='0' x2='1' y2='1'&gt;&lt;stop offset='0' stop-color='%23a855f7'/&gt;&lt;stop offset='1' stop-color='%2300ffff'/&gt;&lt;/linearGradient&gt;&lt;/defs&gt;&lt;rect width='512' height='512' rx='96' fill='%230b0614'/&gt;&lt;circle cx='256' cy='256' r='170' fill='url(%23g)' opacity='0.16'/&gt;&lt;text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='170' fill='%23ffffff'&gt;S&lt;/text&gt;&lt;/svg&gt;" width="512"/>
+<div aria-hidden="true" class="avatar-glow"></div>
+</div>
+<div aria-label="Статы" class="stat-grid">
+<div class="stat-card tilt glass-border depth">
+<div class="stat-number" data-counter="18">0</div>
+<div class="stat-label">мини-проектов</div>
+</div>
+<div class="stat-card tilt glass-border depth">
+<div class="stat-number">JS</div>
+<div class="stat-label">интерактив</div>
+</div>
+<div class="stat-card tilt glass-border depth">
+<div class="stat-number">UI</div>
+<div class="stat-label">анимации</div>
+</div>
+</div>
+</div>
+</section>
+<div aria-hidden="true" class="divider"></div>
+<!-- PROJECTS -->
+<section aria-label="Проекты" class="section reveal" data-section="projects" id="projects">
+<div class="section-head">
+<h2>Проекты</h2>
+<p class="muted">Hover — scrubbing + velocity blur • Клик — glass impact + 3D screenshot</p>
+</div>
+<div aria-label="Фильтр проектов" class="filters glass-border" role="tablist">
+<button aria-selected="true" class="filter-btn is-active magnetic" data-filter="all" role="tab" type="button">All</button>
+<button aria-selected="false" class="filter-btn magnetic" data-filter="js" role="tab" type="button">JS</button>
+<button aria-selected="false" class="filter-btn magnetic" data-filter="ui" role="tab" type="button">UI</button>
+<button aria-selected="false" class="filter-btn magnetic" data-filter="api" role="tab" type="button">API</button>
+<button aria-selected="false" class="filter-btn magnetic" data-filter="python" role="tab" type="button">Python</button>
+</div>
+<div aria-live="polite" class="cards" id="projectsGrid"></div>
+</section>
+<div aria-hidden="true" class="divider"></div>
+<!-- SKILLS -->
+<section aria-label="Навыки" class="section reveal" data-section="skills" id="skills">
+<div class="section-head">
+<h2>Навыки</h2>
+<p class="muted">Фокус: скорость, доступность (a11y), структура UI и аккуратная реализация.</p>
+</div>
+<div class="skills">
+<div class="skill glass-border tilt depth">
+<div class="skill-title">Верстка</div>
+<div class="skill-list">Семантика • Flex/Grid • Responsive • Accessibility • Design System подход</div>
+</div>
+<div class="skill glass-border tilt depth">
+<div class="skill-title">JavaScript</div>
+<div class="skill-list">Состояние UI • Асинхронщина (fetch/async) • Работа с формами • Оптимизация рендера</div>
+</div>
+<div class="skill glass-border tilt depth">
+<div class="skill-title">Инструменты</div>
+<div class="skill-list">Git/GitHub • DevTools • Figma • База SEO • Lighthouse/Perf чеклист</div>
+</div>
+</div>
+</section>
+<div aria-hidden="true" class="divider"></div>
+<!-- ABOUT -->
+<section aria-label="Обо мне" class="section reveal" data-section="about" id="about">
+<div class="section-head">
+<h2>Обо мне</h2>
+<p class="muted">Эффектный UI — да. Но всегда через UX, доступность и производительность.</p>
+</div>
+<div class="about-grid">
+<div class="about-card glass-border tilt depth">
+<h3>Чем полезен в команде</h3>
+<ul>
+<li>Доведу UI до продакшн-качества: аккуратно, адаптивно, без визуальных багов</li>
+<li>Соберу интерактив и состояния на чистом JS (или в рамках текущего стека команды)</li>
+<li>Думаю о доступности: семантика, фокус, клавиатура, aria</li>
+<li>Слежу за скоростью: rAF/idle, lazy-loading, оптимизация перерисовок</li>
+</ul>
+</div>
+<div class="about-card glass-border tilt depth">
+<h3>Что ищу</h3>
+<ul>
+<li>Роль: Frontend Junior+ / Internship</li>
+<li>Реальные задачи, ревью и рост через практику</li>
+<li>Проекты с UI/UX, где важны скорость и качество интерфейса</li>
+</ul>
+</div>
+</div>
+</section>
+<div aria-hidden="true" class="divider"></div>
+<!-- CONTACT -->
+<section aria-label="Контакты" class="section contact reveal" data-section="contact" id="contact">
+<div class="section-head">
+<h2>Контакты</h2>
+<p class="muted">Открыт к предложениям и тестовым — отвечу быстро.</p>
+</div>
+<div aria-label="Контактные ссылки" class="contact-card glass-border tilt depth" role="region">
+<div class="contact-row">
+<span class="contact-label">GitHub</span>
+<a class="contact-value" href="https://github.com/ShadowAmp1" rel="noreferrer noopener" target="_blank">ShadowAmp1</a>
+</div>
+<div class="contact-row">
+<span class="contact-label">Email</span>
+<a class="contact-value" href="mailto:amp98list@gmail.com">amp98list@gmail.com</a>
+</div>
+<div class="contact-actions">
+  <button class="btn ghost magnetic micro-btn" id="copyEmailBtn" type="button" data-state="idle" data-copy="amp98list@gmail.com" aria-label="Скопировать email">
+    <span class="btn-label">Скопировать email</span>
+    <span class="btn-spinner" aria-hidden="true"></span>
+    <span class="btn-check" aria-hidden="true">✓</span>
+  </button>
+</div>
 
-          <div class="quick-info" aria-label="Кратко">
-            <div class="pill glass-border">Berlin (remote)</div>
-            <div class="pill glass-border">Junior+</div>
-            <div class="pill glass-border">Freelance</div>
-          </div>
-        </div>
-
-        <div class="hero-right">
-          <div class="avatar-wrap glass-border tilt depth" data-parallax="0.22" aria-label="Аватар">
-            <img
-              class="avatar"
-              alt="Аватар Shadow"
-              width="512"
-              height="512"
-              loading="lazy"
-              decoding="async"
-              src="data:image/svg+xml;utf8,<?xml version='1.0' encoding='UTF-8'?><svg xmlns='http://www.w3.org/2000/svg' width='512' height='512'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%23a855f7'/><stop offset='1' stop-color='%2300ffff'/></linearGradient></defs><rect width='512' height='512' rx='96' fill='%230b0614'/><circle cx='256' cy='256' r='170' fill='url(%23g)' opacity='0.16'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='170' fill='%23ffffff'>S</text></svg>"
-            />
-            <div class="avatar-glow" aria-hidden="true"></div>
-          </div>
-
-          <div class="stat-grid" aria-label="Статы">
-            <div class="stat-card tilt glass-border depth">
-              <div class="stat-number" data-counter="18">0</div>
-              <div class="stat-label">мини-проектов</div>
-            </div>
-            <div class="stat-card tilt glass-border depth">
-              <div class="stat-number">JS</div>
-              <div class="stat-label">интерактив</div>
-            </div>
-            <div class="stat-card tilt glass-border depth">
-              <div class="stat-number">UI</div>
-              <div class="stat-label">анимации</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <div class="divider" aria-hidden="true"></div>
-
-      <!-- PROJECTS -->
-      <section id="projects" class="section reveal" data-section="projects" aria-label="Проекты">
-        <div class="section-head">
-          <h2>Проекты</h2>
-          <p class="muted">Hover — scrubbing + velocity blur • Клик — glass impact + 3D screenshot</p>
-        </div>
-
-        <div class="filters glass-border" role="tablist" aria-label="Фильтр проектов">
-          <button class="filter-btn is-active magnetic" data-filter="all" type="button" role="tab" aria-selected="true">All</button>
-          <button class="filter-btn magnetic" data-filter="js" type="button" role="tab" aria-selected="false">JS</button>
-          <button class="filter-btn magnetic" data-filter="ui" type="button" role="tab" aria-selected="false">UI</button>
-          <button class="filter-btn magnetic" data-filter="api" type="button" role="tab" aria-selected="false">API</button>
-          <button class="filter-btn magnetic" data-filter="python" type="button" role="tab" aria-selected="false">Python</button>
-        </div>
-
-        <div id="projectsGrid" class="cards" aria-live="polite"></div>
-      </section>
-
-      <div class="divider" aria-hidden="true"></div>
-
-      <!-- SKILLS -->
-      <section id="skills" class="section reveal" data-section="skills" aria-label="Навыки">
-        <div class="section-head">
-          <h2>Навыки</h2>
-          <p class="muted">То, что ожидают от frontend junior+.</p>
-        </div>
-
-        <div class="skills">
-          <div class="skill glass-border tilt depth">
-            <div class="skill-title">Верстка</div>
-            <div class="skill-list">Семантика • Flex/Grid • Адаптив • Accessibility • Анимации</div>
-          </div>
-          <div class="skill glass-border tilt depth">
-            <div class="skill-title">JavaScript</div>
-            <div class="skill-list">DOM • Events • Fetch • Async/Await • Оптимизация</div>
-          </div>
-          <div class="skill glass-border tilt depth">
-            <div class="skill-title">Инструменты</div>
-            <div class="skill-list">Git/GitHub • DevTools • Figma • База SEO</div>
-          </div>
-        </div>
-      </section>
-
-      <div class="divider" aria-hidden="true"></div>
-
-      <!-- ABOUT -->
-      <section id="about" class="section reveal" data-section="about" aria-label="Обо мне">
-        <div class="section-head">
-          <h2>Обо мне</h2>
-          <p class="muted">Чистый UI + “живые” эффекты без перегруза. Люблю 60fps.</p>
-        </div>
-
-        <div class="about-grid">
-          <div class="about-card glass-border tilt depth">
-            <h3>Сильные стороны</h3>
-            <ul>
-              <li>Аккуратная верстка и адаптив</li>
-              <li>Интерактив на чистом JS</li>
-              <li>Анимации (60fps) и микро-UX</li>
-              <li>Понимание структуры проекта</li>
-            </ul>
-          </div>
-          <div class="about-card glass-border tilt depth">
-            <h3>Цель</h3>
-            <ul>
-              <li>Frontend junior+ / стажировка</li>
-              <li>Реальные задачи и рост через ревью</li>
-              <li>Проекты с UI, а не только “кнопки”</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <div class="divider" aria-hidden="true"></div>
-
-      <!-- CONTACT -->
-      <section id="contact" class="section contact reveal" data-section="contact" aria-label="Контакты">
-        <div class="section-head">
-          <h2>Контакты</h2>
-          <p class="muted">Пиши — отвечу.</p>
-        </div>
-
-        <div class="contact-card glass-border tilt depth" role="region" aria-label="Контактные ссылки">
-          <div class="contact-row">
-            <span class="contact-label">GitHub</span>
-            <a class="contact-value" href="https://github.com/ShadowAmp1" target="_blank" rel="noreferrer noopener">ShadowAmp1</a>
-          </div>
-          <div class="contact-row">
-            <span class="contact-label">Email</span>
-            <a class="contact-value" href="mailto:amp98list@gmail.com">amp98list@gmail.com</a>
-          </div>
-        </div>
-
-        <footer class="footer">
-          <span>© <span id="year"></span> Shadow</span>
-          <span class="footer-dot" aria-hidden="true">•</span>
-          <span class="muted">Built with HTML/CSS/JS</span>
-        </footer>
-      </section>
-    </main>
-  </div>
-
-  <!-- MODAL -->
-  <div id="modal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalDesc">
-    <div class="modal-backdrop" data-close="true"></div>
-
-    <div class="modal-card glass-border depth" id="modalCard" role="document" tabindex="-1">
-      <!-- Impact overlay -->
-      <div class="crack-open" aria-hidden="true">
-        <svg class="crack-svg" id="crackSvg" preserveAspectRatio="none"></svg>
-
-        <div class="shards" aria-hidden="true" id="shards">
-          <i class="shard"></i><i class="shard"></i><i class="shard"></i><i class="shard"></i><i class="shard"></i>
-          <i class="shard"></i><i class="shard"></i><i class="shard"></i><i class="shard"></i><i class="shard"></i>
-          <i class="shard"></i><i class="shard"></i><i class="shard"></i><i class="shard"></i>
-        </div>
-      </div>
-
-      <button class="modal-close magnetic" type="button" aria-label="Закрыть" data-close="true">✕</button>
-
-      <div class="modal-media" id="modalMedia">
-        <div class="shot-3d" id="shot3d">
-          <img id="modalShot" alt="Скриншот проекта" loading="lazy" decoding="async" />
-          <div class="shot-shine" aria-hidden="true"></div>
-          <div class="shot-speckle" aria-hidden="true"></div>
-        </div>
-
-        <video id="modalVideo" playsinline muted loop preload="none"></video>
-        <div class="modal-media-glow" aria-hidden="true"></div>
-      </div>
-
-      <div class="modal-body">
-        <div class="modal-top">
-          <h3 id="modalTitle"></h3>
-          <div id="modalTags" class="modal-tags" aria-label="Теги проекта"></div>
-        </div>
-
-        <p id="modalDesc" class="modal-desc"></p>
-
-        <div class="modal-actions" role="group" aria-label="Ссылки проекта">
-          <a id="modalDemo" class="btn primary magnetic" href="#" target="_blank" rel="noreferrer noopener">Demo</a>
-          <a id="modalCode" class="btn ghost magnetic" href="#" target="_blank" rel="noreferrer noopener">Code</a>
-        </div>
-
-        <div id="modalMeta" class="modal-meta"></div>
-      </div>
-    </div>
-  </div>
-
-  <script src="script.js" defer></script>
+</div>
+<footer class="footer">
+<span>© <span id="year"></span> Shadow</span>
+<span aria-hidden="true" class="footer-dot">•</span>
+<span class="muted">Built with HTML/CSS/JS</span>
+</footer>
+</section>
+</main>
+</div>
+<!-- MODAL -->
+<div aria-describedby="modalDesc" aria-hidden="true" aria-labelledby="modalTitle" aria-modal="true" class="modal" id="modal" role="dialog">
+<div class="modal-backdrop" data-close="true"></div>
+<div class="modal-card glass-border depth" id="modalCard" role="document" tabindex="-1">
+<!-- Impact overlay -->
+<div aria-hidden="true" class="crack-open">
+<svg class="crack-svg" id="crackSvg" preserveaspectratio="none"></svg>
+<div aria-hidden="true" class="shards" id="shards">
+<i class="shard"></i><i class="shard"></i><i class="shard"></i><i class="shard"></i><i class="shard"></i>
+<i class="shard"></i><i class="shard"></i><i class="shard"></i><i class="shard"></i><i class="shard"></i>
+<i class="shard"></i><i class="shard"></i><i class="shard"></i><i class="shard"></i>
+</div>
+</div>
+<button aria-label="Закрыть" class="modal-close magnetic" data-close="true" type="button">✕</button>
+<div class="modal-media" id="modalMedia">
+<div class="shot-3d" id="shot3d">
+<img alt="Скриншот проекта" decoding="async" id="modalShot" loading="lazy"/>
+<div aria-hidden="true" class="shot-shine"></div>
+<div aria-hidden="true" class="shot-speckle"></div>
+</div>
+<video id="modalVideo" loop="" muted="" playsinline="" preload="none"></video>
+<div aria-hidden="true" class="modal-media-glow"></div>
+</div>
+<div class="modal-body">
+<div class="modal-top">
+<h3 id="modalTitle"></h3>
+<div aria-label="Теги проекта" class="modal-tags" id="modalTags"></div>
+</div>
+<p class="modal-desc" id="modalDesc"></p>
+<div aria-label="Ссылки проекта" class="modal-actions" role="group">
+<a class="btn primary magnetic" href="#" id="modalDemo" rel="noreferrer noopener" target="_blank">Demo</a>
+<a class="btn ghost magnetic" href="#" id="modalCode" rel="noreferrer noopener" target="_blank">Code</a>
+</div>
+<div class="modal-meta" id="modalMeta"></div>
+</div>
+</div>
+</div>
+<script defer="" src="script.js"></script>
 </body>
 </html>

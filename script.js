@@ -205,9 +205,11 @@
           DOM.preloader?.remove();
           // intro becomes ready now (nice timing)
           DOM.intro?.classList.add("is-ready");
+          armAutoEnter();
         }, REDUCED ? 1 : 540);
       } else {
         DOM.intro?.classList.add("is-ready");
+          armAutoEnter();
       }
     }
 
@@ -298,9 +300,10 @@
       intensity: LOW_POWER ? 0.0 : 1.0,
     };
 
+    let resolveReady = null;
+
     const ready = new Promise((resolve) => {
-      // init is called immediately below, resolve there
-      WebGLGlass._resolveReady = resolve; // eslint-disable-line no-use-before-define
+      resolveReady = resolve;
     });
 
     function createShader(type, src) {
@@ -370,7 +373,7 @@
       const c = DOM.glCanvas;
       if (!c || LOW_POWER) {
         DOM.glCanvas?.classList.add("is-off");
-        WebGLGlass._resolveReady?.();
+        resolveReady?.();
         return;
       }
 
@@ -529,11 +532,11 @@
 
         window.addEventListener("resize", rafThrottle(resize));
 
-        WebGLGlass._resolveReady?.();
+        resolveReady?.();
       } catch (err) {
         // fallback
         if (DOM.glCanvas) DOM.glCanvas.style.display = "none";
-        WebGLGlass._resolveReady?.();
+        resolveReady?.();
       }
     }
 
@@ -651,6 +654,109 @@
           el.style.transform = `translate3d(${bx}px, ${by}px, 0)`;
           requestAnimationFrame(tick);
         })();
+
+  // -----------------------------
+  // Micro-interactions: ripple + stateful actions
+  // -----------------------------
+  const MicroUI = (() => {
+    function spawnRipple(el, clientX, clientY) {
+      if (!el) return;
+
+      const r = el.getBoundingClientRect();
+      const size = Math.max(r.width, r.height) * 1.15;
+
+      const s = document.createElement("span");
+      s.className = "ripple";
+      s.style.width = `${size}px`;
+      s.style.height = `${size}px`;
+      s.style.left = `${clientX - r.left}px`;
+      s.style.top = `${clientY - r.top}px`;
+
+      el.appendChild(s);
+      s.addEventListener("animationend", () => s.remove(), { once: true });
+    }
+
+    function initRipples() {
+      document.addEventListener("pointerdown", (e) => {
+        const el = e.target?.closest?.(".btn, .filter-btn");
+        if (!el) return;
+        if (el.hasAttribute("disabled")) return;
+        if (el.getAttribute("aria-disabled") === "true") return;
+        if (REDUCED) return; // keep it calm in reduced-motion
+
+        spawnRipple(el, e.clientX, e.clientY);
+      }, { passive: true });
+    }
+
+    function initCopyEmail() {
+      const btn = $("#copyEmailBtn");
+      if (!btn) return;
+
+      const email = btn.getAttribute("data-copy") || "amp98list@gmail.com";
+      const label = $(".btn-label", btn);
+      const idleText = label ? label.textContent : "Скопировать email";
+
+      async function copy() {
+        btn.setAttribute("data-state", "loading");
+        if (label) label.textContent = "Копирую…";
+
+        // tiny delay for nicer UX
+        await new Promise((r) => setTimeout(r, 180));
+
+        let ok = false;
+        try {
+          await navigator.clipboard.writeText(email);
+          ok = true;
+        } catch {
+          // fallback
+          try {
+            const ta = document.createElement("textarea");
+            ta.value = email;
+            ta.setAttribute("readonly", "");
+            ta.style.position = "fixed";
+            ta.style.left = "-9999px";
+            ta.style.top = "0";
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand("copy");
+            ta.remove();
+            ok = true;
+          } catch {
+            ok = false;
+          }
+        }
+
+        if (ok) {
+          btn.setAttribute("data-state", "success");
+          if (label) label.textContent = "Скопировано";
+        } else {
+          btn.setAttribute("data-state", "idle");
+          if (label) label.textContent = idleText;
+          // last resort: open mail client
+          try { location.href = `mailto:${email}`; } catch {}
+          return;
+        }
+
+        setTimeout(() => {
+          btn.setAttribute("data-state", "idle");
+          if (label) label.textContent = idleText;
+        }, 1200);
+      }
+
+      btn.addEventListener("click", () => {
+        const state = btn.getAttribute("data-state") || "idle";
+        if (state === "loading") return;
+        copy();
+      });
+    }
+
+    function init() {
+      initRipples();
+      initCopyEmail();
+    }
+
+    return { init };
+  })();
       });
     }
 
@@ -754,6 +860,41 @@
   })();
 
   // -----------------------------
+  // Scroll-linked progress (rAF-smoothed)
+  // -----------------------------
+  const ScrollProgress = (() => {
+    function init() {
+      const bar = $("#scrollProgressBar");
+      if (!bar) return;
+
+      let cur = 0;
+      let target = 0;
+
+      const updateTarget = () => {
+        const docH = document.documentElement.scrollHeight || 1;
+        const max = Math.max(1, docH - innerHeight);
+        target = clamp((window.scrollY || 0) / max, 0, 1);
+      };
+
+      const onScroll = rafThrottle(updateTarget);
+      window.addEventListener("scroll", onScroll, { passive: true });
+      window.addEventListener("resize", onScroll);
+
+      updateTarget();
+
+      (function tick() {
+        if (!bar.isConnected) return;
+        const t = LOW_POWER ? 0.28 : 0.14;
+        cur = lerp(cur, target, t);
+        bar.style.transform = `scaleX(${cur.toFixed(4)})`;
+        requestAnimationFrame(tick);
+      })();
+    }
+
+    return { init };
+  })();
+
+  // -----------------------------
   // Portal transitions (SPA feel)
   // -----------------------------
   const Portal = (() => {
@@ -803,6 +944,50 @@
   const Nav = (() => {
     const sections = () => $$("section[data-section]");
 
+    // physics-ish spring for the indicator (desktop only)
+    let x = 0, vx = 0;
+    let w = 40, vw = 0;
+    let tx = 0, tw = 40;
+
+    let started = false;
+    let lastT = now();
+
+    function renderIndicator() {
+      if (!DOM.navIndicator) return;
+      DOM.navIndicator.style.transform = `translate3d(${x}px,0,0)`;
+      DOM.navIndicator.style.width = `${Math.max(14, w)}px`;
+    }
+
+    function snapIndicator() {
+      x = tx; w = tw; vx = 0; vw = 0;
+      renderIndicator();
+    }
+
+    function tick() {
+      if (!DOM.nav || !DOM.navIndicator || !DOM.nav.isConnected) return;
+
+      const t = now();
+      const dt = Math.min(0.034, (t - lastT) / 1000);
+      lastT = t;
+
+      // tuned for a "springy but controlled" feel
+      const k = 42;      // stiffness
+      const damp = 12.5; // damping
+
+      // x spring
+      let ax = (tx - x) * k - vx * damp;
+      vx += ax * dt;
+      x += vx * dt;
+
+      // width spring
+      let aw = (tw - w) * k - vw * damp;
+      vw += aw * dt;
+      w += vw * dt;
+
+      renderIndicator();
+      requestAnimationFrame(tick);
+    }
+
     const update = rafThrottle(() => {
       if (!DOM.nav || !DOM.navIndicator || DOM.navLinks.length === 0) return;
 
@@ -820,7 +1005,7 @@
         }
       }
 
-            if (current === "home") current = "projects";
+      if (current === "home") current = "projects";
 
       DOM.navLinks.forEach((a) => a.classList.toggle("is-active", a.dataset.section === current));
 
@@ -830,8 +1015,14 @@
       const r = active.getBoundingClientRect();
       const nr = DOM.nav.getBoundingClientRect();
 
-      DOM.navIndicator.style.left = `${(r.left - nr.left) + r.width * 0.1}px`;
-      DOM.navIndicator.style.width = `${r.width * 0.8}px`;
+      tx = (r.left - nr.left) + r.width * 0.1;
+      tw = r.width * 0.8;
+
+      // first paint: snap to avoid "flying in" from 0
+      if (!started || LOW_POWER) {
+        started = true;
+        snapIndicator();
+      }
     });
 
     function init() {
@@ -840,6 +1031,12 @@
       window.addEventListener("scroll", update, { passive: true });
       window.addEventListener("resize", update);
       setTimeout(update, 240);
+
+      if (!LOW_POWER) {
+        started = true;
+        lastT = now();
+        requestAnimationFrame(tick);
+      }
 
       // glow follows hover (scrubbing)
       DOM.nav.addEventListener("mousemove", rafThrottle((e) => {
@@ -889,12 +1086,12 @@
       id: "reshenie",
       title: "ООО «РЕШЕНИЕ» — Outsourcing • Legal • Compliance",
       desc:
-        "Лендинг сервиса: аутсорсинг персонала + юридическое сопровождение и комплаенс. " +
-        "Упор на SLA, прозрачность, процесс за 7 дней и формы заявки.",
+        "Лендинг для B2B‑сервиса (аутсорсинг персонала + legal/compliance). Сделал структуру под лид‑ген: оффер → доверие → процесс → CTA. Акцент на понятный путь заявки и читабельность на мобильных.",
       tags: ["UI", "Landing", "Business"],
       filter: ["ui", "js"],
       demo: "https://reshenie-site1.onrender.com/",
       code: "https://github.com/ShadowAmp1",
+      thumb: "assets/projects/reshenie.webp",
       shot: "https://image.thum.io/get/width/1400/https://reshenie-site1.onrender.com/",
       video: "https://assets.mixkit.co/videos/preview/mixkit-purple-ink-in-water-117-large.mp4"
     },
@@ -902,12 +1099,12 @@
       id: "messenger",
       title: "Messenger — web chat (prototype)",
       desc:
-        "Мини-мессенджер: диалоги, ввод сообщений, состояния и обработка событий. " +
-        "Фокус на UX, скорость интерфейса и подготовку к WebSocket/API.",
+        "Прототип веб‑мессенджера: диалоги, отправка сообщений, состояния UI и обработка событий. Фокус на UX (быстрый ввод, пустые состояния, сценарии ошибок) и подготовку к WebSocket/API.",
       tags: ["JS", "UI", "State"],
       filter: ["js", "ui", "api"],
       demo: "https://messenger-k93n.onrender.com/",
       code: "https://github.com/ShadowAmp1",
+      thumb: "assets/projects/messenger.webp",
       shot: "https://image.thum.io/get/width/1400/https://messenger-k93n.onrender.com/",
       video: "https://assets.mixkit.co/videos/preview/mixkit-network-of-lines-abstract-4886-large.mp4"
     },
@@ -915,11 +1112,12 @@
       id: "glassui",
       title: "Neon Portfolio (Glass + Portal)",
       desc:
-        "Эта страница как проект: preloader, portal-zoom, scrubbing превью, WebGL glass distortion, crack-open модалки и микро-UX.",
+        "Этот сайт как инженерный проект: preloader, portal‑переходы, WebGL glass distortion, модалки с crack‑эффектом и микро‑UX. Цель — показать performance‑подход и аккуратную архитектуру интерактива.",
       tags: ["UI", "Motion", "WebGL"],
       filter: ["ui", "js"],
       demo: "#",
       code: "https://github.com/ShadowAmp1/shadow-portfolio",
+      thumb: "assets/projects/glassui.webp",
       shot: "og-image.png",
       video: "https://assets.mixkit.co/videos/preview/mixkit-abstract-background-with-moving-lines-4885-large.mp4"
     },
@@ -927,11 +1125,12 @@
       id: "dashboard",
       title: "Mini Dashboard (UI System)",
       desc:
-        "Карточки, фильтры, состояния, skeleton-подход. Тренировка архитектуры и темпа интерфейса.",
+        "Мини‑dashboard: карточки, фильтры, состояния и skeleton‑загрузка. Тренировка UI‑системы, композиции и ритма интерфейса — как в реальных продуктах.",
       tags: ["UI", "Layout"],
       filter: ["ui"],
       demo: "#",
       code: "https://github.com/ShadowAmp1",
+      thumb: "assets/projects/dashboard.webp",
       shot: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1600&auto=format&fit=crop",
       video: "https://assets.mixkit.co/videos/preview/mixkit-neon-lines-abstract-508-large.mp4"
     },
@@ -944,6 +1143,7 @@
       filter: ["js", "api"],
       demo: "#",
       code: "https://github.com/ShadowAmp1",
+      thumb: "assets/projects/api.webp",
       shot: "https://images.unsplash.com/photo-1526481280695-3c687fd643ed?q=80&w=1600&auto=format&fit=crop",
       video: "https://assets.mixkit.co/videos/preview/mixkit-abstract-background-with-moving-lines-4885-large.mp4"
     },
@@ -956,6 +1156,7 @@
       filter: ["python"],
       demo: "#",
       code: "https://github.com/ShadowAmp1",
+      thumb: "assets/projects/python.webp",
       shot: "https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?q=80&w=1600&auto=format&fit=crop",
       video: "https://assets.mixkit.co/videos/preview/mixkit-abstract-background-with-moving-lines-4885-large.mp4"
     }
@@ -966,8 +1167,9 @@
   // -----------------------------
   const Projects = (() => {
     let activeFilter = "all";
+    let wraps = [];
 
-    function cardTemplate(p) {
+    function cardTemplate(p, idx) {
       const tags = p.tags.map((t) => `<span>${escapeHtml(t)}</span>`).join("");
 
       const demo = p.demo && isUrl(p.demo)
@@ -978,40 +1180,166 @@
         ? `<a class="magnetic" href="${p.code}" target="_blank" rel="noreferrer noopener">Code</a>`
         : `<a class="magnetic" href="#" aria-disabled="true" tabindex="-1" style="opacity:.35">Code</a>`;
 
+      // reveal stagger: each card gets its own delay
+      const delay = LOW_POWER ? 0 : Math.min(560, idx * 70);
+
       return `
-        <article class="card glass-border depth tilt"
-          data-id="${p.id}"
-          data-filter="${p.filter.join(",")}"
-          tabindex="0"
-          role="button"
-          aria-label="Открыть проект: ${escapeHtml(p.title)}"
-        >
-          <div class="card-preview">
-            <video class="card-video" preload="metadata" muted loop playsinline data-src="${escapeHtml(p.video)}"></video>
-          </div>
+        <div class="card-wrap reveal" style="--reveal-delay:${delay}ms" data-id="${p.id}" data-filter="${p.filter.join(",")}" aria-hidden="false">
+          <article class="card glass-border depth tilt"
+            data-id="${p.id}"
+            tabindex="0"
+            role="button"
+            aria-label="Открыть проект: ${escapeHtml(p.title)}"
+          >
+            <div class="card-preview">
+              ${(() => {
+                const t = p.thumb || p.shot || "";
+                return t
+                  ? `<img class="card-thumb" src="${escapeHtml(t)}" alt="" loading="lazy" decoding="async">`
+                  : "";
+              })()}
+              <video class="card-video" preload="metadata" muted loop playsinline data-src="${escapeHtml(p.video)}"></video>
+            </div>
 
-          <h3>${escapeHtml(p.title)}</h3>
-          <p>${escapeHtml(p.desc)}</p>
+            <h3>${escapeHtml(p.title)}</h3>
+            <p>${escapeHtml(p.desc)}</p>
 
-          <div class="card-tags">${tags}</div>
+            <div class="card-tags">${tags}</div>
 
-          <div class="card-links">
-            ${demo}
-            ${code}
-          </div>
-        </article>
+            <div class="card-links">
+              ${demo}
+              ${code}
+            </div>
+          </article>
+        </div>
       `;
     }
 
-    function render() {
+    function hideWrap(w) {
+      if (!w) return;
+      w.style.display = "none";
+      w.setAttribute("aria-hidden", "true");
+      const card = $(".card", w);
+      if (card) card.tabIndex = -1;
+    }
+
+    function showWrap(w) {
+      if (!w) return;
+      w.style.display = "";
+      w.setAttribute("aria-hidden", "false");
+      const card = $(".card", w);
+      if (card) card.tabIndex = 0;
+    }
+
+    function createGhost(w, rect) {
+      if (!w || !rect) return;
+      // clone wrapper; videos are lazy (data-src), so no heavy load
+      const ghost = w.cloneNode(true);
+      ghost.classList.add("flip-ghost");
+      ghost.style.left = `${rect.left}px`;
+      ghost.style.top = `${rect.top}px`;
+      ghost.style.width = `${rect.width}px`;
+      ghost.style.height = `${rect.height}px`;
+      ghost.style.boxSizing = "border-box";
+      ghost.style.opacity = "1";
+      ghost.style.filter = "none";
+
+      // ensure it's visible even if original had display none later
+      ghost.style.display = "block";
+
+      document.body.appendChild(ghost);
+
+      const a = ghost.animate([
+        { opacity: 1, transform: "translateZ(0) scale(1)", filter: "blur(0px)" },
+        { opacity: 0, transform: "translateZ(0) scale(0.92)", filter: "blur(10px)" }
+      ], {
+        duration: 320,
+        easing: "cubic-bezier(0.2,0.8,0.2,1)"
+      });
+      a.onfinish = () => ghost.remove();
+    }
+
+    function applyFilter(filter) {
       if (!DOM.projectsGrid) return;
+      const grid = DOM.projectsGrid;
 
-      const list = PROJECTS.filter((p) => (activeFilter === "all" ? true : p.filter.includes(activeFilter)));
-      DOM.projectsGrid.innerHTML = list.map(cardTemplate).join("");
+      const nextVisible = wraps.filter((w) => {
+        const f = (w.dataset.filter || "").split(",").filter(Boolean);
+        return filter === "all" ? true : f.includes(filter);
+      });
+      const nextSet = new Set(nextVisible.map((w) => w.dataset.id));
 
-      HoverFX.refresh();
+      // no animations in reduced/low power
+      const animate = !(LOW_POWER || REDUCED);
 
-      // wire cards
+      // FIRST: measure current positions
+      const first = new Map();
+      if (animate) {
+        wraps.forEach((w) => {
+          if (w.style.display === "none") return;
+          first.set(w.dataset.id, w.getBoundingClientRect());
+        });
+      }
+
+      // OUT: create ghosts for disappearing elements, then remove from layout immediately
+      wraps.forEach((w) => {
+        const id = w.dataset.id;
+        const shouldShow = nextSet.has(id);
+
+        if (!shouldShow && w.style.display !== "none") {
+          if (animate) createGhost(w, first.get(id));
+          hideWrap(w);
+        }
+      });
+
+      // IN: show incoming elements before layout (so they can be placed)
+      wraps.forEach((w) => {
+        const id = w.dataset.id;
+        const shouldShow = nextSet.has(id);
+        if (shouldShow && w.style.display === "none") {
+          showWrap(w);
+        }
+      });
+
+      // ORDER: visible first (in original order), then hidden
+      const hidden = wraps.filter((w) => !nextSet.has(w.dataset.id));
+      const ordered = [...nextVisible, ...hidden];
+      ordered.forEach((w) => grid.appendChild(w));
+
+      if (!animate) return;
+
+      // LAST: measure and FLIP
+      const last = new Map();
+      nextVisible.forEach((w) => last.set(w.dataset.id, w.getBoundingClientRect()));
+
+      nextVisible.forEach((w, i) => {
+        const id = w.dataset.id;
+        const fr = first.get(id);
+        const lr = last.get(id);
+
+        // entering (was hidden)
+        if (!fr) {
+          w.animate([
+            { opacity: 0, transform: "translateY(10px) scale(0.98)", filter: "blur(10px)" },
+            { opacity: 1, transform: "translateY(0) scale(1)", filter: "blur(0px)" }
+          ], { duration: 540, easing: "cubic-bezier(0.2,0.8,0.2,1)" });
+          return;
+        }
+
+        // moving
+        const dx = fr.left - lr.left;
+        const dy = fr.top - lr.top;
+        if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) return;
+
+        w.animate([
+          { transform: `translate(${dx}px, ${dy}px)` },
+          { transform: "translate(0,0)" }
+        ], { duration: 560, easing: "cubic-bezier(0.2,0.8,0.2,1)" });
+      });
+    }
+
+    function wireCards() {
+      // wire cards once
       $$(".card", DOM.projectsGrid).forEach((card) => {
         VideoScrub.attach(card);
 
@@ -1029,7 +1357,20 @@
       });
     }
 
+    function renderAllOnce() {
+      if (!DOM.projectsGrid) return;
+      DOM.projectsGrid.innerHTML = PROJECTS.map(cardTemplate).join("");
+      wraps = $$(".card-wrap", DOM.projectsGrid);
+
+      HoverFX.refresh();
+      wireCards();
+    }
+
     function init() {
+      if (!DOM.projectsGrid) return;
+
+      renderAllOnce();
+
       DOM.filterBtns.forEach((b) => {
         b.addEventListener("click", () => {
           DOM.filterBtns.forEach((x) => {
@@ -1040,11 +1381,12 @@
           b.setAttribute("aria-selected", "true");
 
           activeFilter = b.getAttribute("data-filter") || "all";
-          render();
+          applyFilter(activeFilter);
         });
       });
 
-      render();
+      // initial
+      applyFilter(activeFilter);
     }
 
     return { init };
@@ -1925,6 +2267,27 @@
 
   // -----------------------------
   // Intro -> Enter site
+
+  // Auto-skip intro (for hiring-friendly flow)
+  let userInteracted = false;
+  let autoEnterTimer = 0;
+
+  function markInteracted() {
+    userInteracted = true;
+    if (autoEnterTimer) clearTimeout(autoEnterTimer);
+    autoEnterTimer = 0;
+  }
+
+  function armAutoEnter() {
+    if (!DOM.intro || !DOM.main) return;
+    if (autoEnterTimer) clearTimeout(autoEnterTimer);
+    autoEnterTimer = setTimeout(() => {
+      if (userInteracted) return;
+      if (!DOM.intro || DOM.intro.style.display === "none") return;
+      enterSiteToTop();
+    }, REDUCED ? 650 : 950);
+  }
+
   // -----------------------------
   function showMain() {
     if (!DOM.intro || !DOM.main) return;
@@ -1955,11 +2318,13 @@
   }
 
   DOM.enterBtn?.addEventListener("click", (e) => {
+    markInteracted();
     playCrack();
     enterSiteToTop();
   });
 
   DOM.projectsBtn?.addEventListener("click", (e) => {
+    markInteracted();
     playCrack();
     // user explicitly chose projects
     enterSiteToProjects({ x: e.clientX, y: e.clientY });
@@ -1968,10 +2333,21 @@
   window.addEventListener("keydown", (e) => {
     if (!DOM.intro || DOM.intro.style.display === "none") return;
     if (e.key === "Enter" || e.key === " ") {
+      markInteracted();
       playCrack();
       enterSiteToTop();
     }
   });
+  // Any interaction cancels the auto-enter
+  window.addEventListener("pointerdown", markInteracted, { once: true, passive: true });
+  window.addEventListener("touchstart", markInteracted, { once: true, passive: true });
+  window.addEventListener("keydown", (e) => {
+    // Don't cancel if it's just a modifier key, but cancel on any real intent
+    if (e.key && ["Shift","Alt","Control","Meta"].includes(e.key)) return;
+    markInteracted();
+  }, { once: true });
+
+
 
   // -----------------------------
   // Boot
@@ -1981,7 +2357,9 @@
     WebGLGlass.init();
     Cursor.init();
     HoverFX.init();
+    (typeof MicroUI !== "undefined" && MicroUI?.init) && MicroUI.init();
     Parallax.init();
+    ScrollProgress.init();
     Nav.init();
     Projects.init();
     Modal.init();
