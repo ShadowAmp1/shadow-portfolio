@@ -137,6 +137,8 @@
     <main id="home" class="container" tabindex="-1">
       <!-- HERO -->
       <section class="hero reveal" id="homeSection" data-section="home" aria-label="Главный блок">
+        <div class="bg-blob" aria-hidden="true"></div>
+        <div class="bg-blob bg-blob--2" aria-hidden="true"></div>
         <div class="hero-left">
           <div class="chip glass-border" aria-label="Статус">
             <span class="chip-dot" aria-hidden="true"></span>
@@ -145,6 +147,23 @@
 
           <h2 class="glitch main-title" data-text="Shadow">Shadow</h2>
           <p class="subtitle">Frontend Developer • HTML/CSS/JS • Motion UI • Python</p>
+
+          <aside class="bio-card glass-border depth reveal" aria-label="Коротко обо мне">
+            <div class="bio-top">
+              <span class="bio-dot" aria-hidden="true"></span>
+              <span class="bio-kicker">Bio</span>
+            </div>
+            <p class="bio-text">
+              Делаю чистую вёрстку, интерактив на JS и motion‑UI без лагов (60fps).
+              Люблю эффект “glass / neon”, но держу UX и производительность в приоритете.
+            </p>
+            <ul class="bio-list" aria-label="Сильные стороны">
+              <li>Адаптивная верстка + компоненты</li>
+              <li>Анимации, scroll‑UX, micro‑interactions</li>
+              <li>Оптимизация: rAF, lazy, Lighthouse</li>
+            </ul>
+          </aside>
+
 
           <div class="hero-actions" role="group" aria-label="Навигация по странице">
             <button class="btn primary magnetic portal-btn" data-target="projects" type="button">

@@ -590,6 +590,22 @@
           DOM.reactiveGlow.style.setProperty("--gy", `${(mouseY / innerHeight) * 100}%`);
         }
 
+
+        // Neon Clean blobs: subtle parallax follow (no haze)
+        const bx = (mouseX / innerWidth - 0.5);
+        const by = (mouseY / innerHeight - 0.5);
+        const b1 = document.querySelector(".bg-blob");
+        const b2 = document.querySelector(".bg-blob--2");
+        if (b1) b1.style.transform = `translate3d(${bx * 18}px, ${by * 14}px, 0)`;
+        if (b2) b2.style.transform = `translate3d(${bx * -14}px, ${by * 18}px, 0)`;
+
+        // Bio card local highlight
+        const bio = document.querySelector(".bio-card");
+        if (bio) {
+          bio.style.setProperty("--mx", `${(mouseX / innerWidth) * 100}%`);
+          bio.style.setProperty("--my", `${(mouseY / innerHeight) * 100}%`);
+        }
+
         requestAnimationFrame(tick);
       })();
     }

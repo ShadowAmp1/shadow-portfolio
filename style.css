@@ -523,14 +523,18 @@ body.portal-zooming{
 }
 
 /* hero */
+
 .hero{
+  position:relative;
+  overflow:hidden;
   min-height:calc(100vh - 120px);
   display:grid;
-  grid-template-columns:1.2fr .8fr;
+  grid-template-columns:1fr; /* single column */
   align-items:center;
   gap:34px;
   padding:28px 0 44px;
 }
+
 .chip{
   display:inline-flex;
   align-items:center;
@@ -1291,4 +1295,120 @@ html.lowpower
 .crack-ring{
   stroke: rgba(255,255,255,.45);
   opacity:.55;
+}
+
+
+/* Remove avatar block completely */
+.hero-right{
+  display:none !important;
+}
+
+
+/* === Neon Clean: animated light gradient blobs (no haze) === */
+.bg-blob{
+  position:absolute;
+  inset:auto;
+  width:min(740px, 70vw);
+  height:min(740px, 70vw);
+  left:-18%;
+  top:-22%;
+  border-radius:50%;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(168,85,247,.38), transparent 60%),
+    radial-gradient(circle at 70% 60%, rgba(34,211,238,.26), transparent 62%),
+    radial-gradient(circle at 45% 75%, rgba(0,255,255,.18), transparent 64%);
+  filter: saturate(1.35) contrast(1.05);
+  mix-blend-mode: screen;
+  opacity:.55;
+  transform: translate3d(0,0,0);
+  animation: blobFloat 10s ease-in-out infinite;
+  pointer-events:none;
+  z-index:0;
+}
+
+.bg-blob--2{
+  width:min(860px, 78vw);
+  height:min(860px, 78vw);
+  left:56%;
+  top:12%;
+  opacity:.45;
+  animation-duration: 14s;
+  animation-direction: alternate;
+}
+
+@keyframes blobFloat{
+  0%{ transform: translate3d(0,0,0) scale(1); }
+  35%{ transform: translate3d(7%, 4%, 0) scale(1.06); }
+  70%{ transform: translate3d(-4%, 8%, 0) scale(0.98); }
+  100%{ transform: translate3d(0,0,0) scale(1); }
+}
+
+
+/* === Floating glass bio card === */
+.bio-card{
+  margin-top: 18px;
+  padding: 14px 14px 12px;
+  border-radius: 18px;
+  position: relative;
+  max-width: 520px;
+  background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+  backdrop-filter: blur(10px);
+  box-shadow: 0 18px 60px rgba(0,0,0,.35);
+  transform: translateZ(0);
+}
+
+.bio-card::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  pointer-events:none;
+  background: radial-gradient(600px 120px at var(--mx,50%) var(--my,30%), rgba(168,85,247,.22), transparent 60%);
+  opacity:.9;
+  mix-blend-mode: overlay;
+}
+
+.bio-top{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom: 8px;
+}
+.bio-dot{
+  width:8px;
+  height:8px;
+  border-radius:999px;
+  background: radial-gradient(circle, rgba(255,255,255,.95), rgba(34,211,238,.85));
+  box-shadow: 0 0 16px rgba(34,211,238,.35), 0 0 24px rgba(168,85,247,.22);
+}
+.bio-kicker{
+  font-size:12px;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  opacity:.8;
+}
+.bio-text{
+  margin: 0 0 10px;
+  line-height:1.5;
+  opacity:.92;
+}
+.bio-list{
+  margin: 0;
+  padding-left: 18px;
+  display:grid;
+  gap:6px;
+  opacity:.9;
+}
+.bio-list li{
+  list-style: disc;
+}
+
+
+.hero-left{
+  position:relative;
+  z-index:2;
+}
+
+@media (prefers-reduced-motion: reduce){
+  .bg-blob{ animation:none !important; }
 }
